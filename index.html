@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>منصة التميز المهني للحلقات التنشيطية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Tajawal',sans-serif;margin:0;background:#f5f7fa}
+header{background:#1e3a5f;color:white;padding:20px;text-align:center}
+.container{padding:20px}
+button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer}
+.btn{background:#1e3a5f;color:white}
+.btn-danger{background:#c0392b;color:white}
+.btn-edit{background:#f39c12;color:white}
+.btn-word{background:#2b579a;color:white}
+.card{background:white;padding:15px;border-radius:10px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;text-align:center}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>منصة التميز المهني للحلقات التنشيطية</h2>
+</header>
+
+<div class="container">
+
+<h3>إضافة حلقة جديدة</h3>
+
+<input id="title" placeholder="عنوان الحلقة"><br><br>
+<input id="day" placeholder="اليوم"><br><br>
+<input id="date" type="date"><br><br>
+<textarea id="goal" placeholder="الهدف"></textarea><br><br>
+
+<button class="btn" onclick="addHalaqa()">حفظ الحلقة</button>
+
+<hr>
+
+<h3>الأرشيف</h3>
+
+<div id="archive"></div>
+
+</div>
+
+<script>
+
+let halaqat = [];
+
+function addHalaqa(){
+let h = {
+id:Date.now(),
+title:document.getElementById("title").value,
+day:document.getElementById("day").value,
+date:document.getElementById("date").value,
+goal:document.getElementById("goal").value,
+teachers:[],
+approved:false
+};
+halaqat.push(h);
+render();
+}
+
+function render(){
+let html="";
+halaqat.forEach(h=>{
+html+=`
+<div class="card">
+<b>${h.title}</b><br>
+${h.day} - ${h.date}<br><br>
+
+<button class="btn" onclick="printHalaqa(${h.id})">🖨 طباعة</button>
+<button class="btn-edit">✏ تعديل</button>
+<button class="btn-danger">🗑 حذف</button>
+<button class="btn-word" onclick="exportWord(${h.id})">📄 Word</button>
+
+</div>
+`;
+});
+document.getElementById("archive").innerHTML=html;
+}
+
+function printHalaqa(id){
+let h=halaqat.find(x=>x.id===id);
+let w=window.open("");
+w.document.write(`
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+body{font-family:Tajawal;padding:40px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #000;padding:8px;text-align:center}
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center">محضر حلقة تنشيطية</h2>
+
+<p><b>العنوان:</b> ${h.title}</p>
+<p><b>اليوم:</b> ${h.day}</p>
+<p><b>التاريخ:</b> ${h.date}</p>
+<p><b>الهدف:</b> ${h.goal}</p>
+
+<h3>المعلمات الحاضرات</h3>
+<table>
+<tr><th>م</th><th>اسم المعلمة</th><th>التوقيع</th></tr>
+<tr><td>1</td><td>................</td><td></td></tr>
+<tr><td>2</td><td>................</td><td></td></tr>
+</table>
+
+<br><br>
+
+<p><b>المنفذة:</b> ........................................</p>
+<p><b>مديرة المدرسة:</b> ........................................</p>
+
+<script>
+window.onload=function(){window.print()}
+<\/script>
+
+</body>
+</html>
+`);
+}
+
+function exportWord(id){
+let h=halaqat.find(x=>x.id===id);
+let content=`
+<h2>محضر حلقة تنشيطية</h2>
+<p>العنوان: ${h.title}</p>
+<p>اليوم: ${h.day}</p>
+<p>التاريخ: ${h.date}</p>
+<p>الهدف: ${h.goal}</p>
+<p>المنفذة: ___________________</p>
+<p>مديرة المدرسة: ___________________</p>
+`;
+let blob=new Blob(['\ufeff',content],{type:"application/msword"});
+let url=URL.createObjectURL(blob);
+let a=document.createElement("a");
+a.href=url;
+a.download="halaqa.doc";
+a.click();
+}
+
+</script>
+
+</body>
+</html>        
